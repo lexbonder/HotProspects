@@ -8,14 +8,25 @@
 import SwiftUI
 
 struct ContentView: View {
+    // static let tag = "helpfulName"
+    @State private var selectedTab = "One"
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        TabView(selection: $selectedTab) {
+            Text("Tab 1")
+                .onTapGesture {
+                    selectedTab = "Two"
+                }
+                .tabItem {
+                    Label("One", systemImage: "star")
+                }
+            Text("Tab 2")
+                .tabItem {
+                    Label("Two", systemImage: "circle")
+                }
+                .tag("Two")
+                // .tag(ContentView.tag)
         }
-        .padding()
     }
 }
 

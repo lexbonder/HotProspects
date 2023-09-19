@@ -9,13 +9,24 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        List {
+            Text("Bug Hunter")
+                .swipeActions {
+                    Button(role: .destructive) {
+                        print("Deleting")
+                    } label: {
+                        Label("Delete", systemImage: "minus.circle")
+                    }
+                }
+                .swipeActions(edge: .leading) {
+                    Button {
+                        print("pinning")
+                    } label: {
+                        Label("Pin", systemImage: "pin")
+                    }
+                    .tint(.orange)
+                }
         }
-        .padding()
     }
 }
 

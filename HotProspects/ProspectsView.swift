@@ -7,6 +7,7 @@
 
 import CodeScanner
 import SwiftUI
+import UserNotifications
 
 struct ProspectsView: View {
     enum FilterType {
@@ -42,6 +43,13 @@ struct ProspectsView: View {
                                 Label("Mark Contacted", systemImage: "person.crop.circle.fill.badge.checkmark")
                             }
                             .tint(.green)
+                            
+                            Button {
+                                addNotification(for: prospect)
+                            } label: {
+                                Label("Remind me", systemImage: "bell")
+                            }
+                            .tint(.orange)
                         }
                     }
                 }
@@ -93,9 +101,45 @@ struct ProspectsView: View {
             let person = Prospect()
             person.name = details[0]
             person.emailAddress = details[1]
-            prospects.people.append(person)
+            prospects.add(person)
         case .failure(let error):
             print("Scan Failed: \(error.localizedDescription)")
+        }
+    }
+    
+    func addNotification(for prospect: Prospect) {
+        let center = UNUserNotificationCenter.current()
+        
+        let addRequest = {
+            // Build content of the reminder
+            let content = UNMutableNotificationContent()
+            content.title = "Contact \(prospect.name)"
+            content.subtitle = prospect.emailAddress
+            
+            // Control when trigger happens
+            var dateComponents = DateComponents() // build a date components object
+            dateComponents.hour = 9 // any 9:00 am
+//            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false) // the next 9am, no repeats.
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false) // for testing, fire in 5 seconds.
+            
+            // Build finished request
+            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+            // Add it to the notification center where it will be handled by iOS magic ✨
+            center.add(request)
+        }
+        
+        center.getNotificationSettings { settings in
+            if settings.authorizationStatus == .authorized {
+                addRequest()
+            } else {
+                center.requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+                    if success {
+                        addRequest()
+                    } else {
+                        print("Oh no! Permission request failed!")
+                    }
+                }
+            }
         }
     }
 }

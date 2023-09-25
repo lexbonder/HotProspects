@@ -22,11 +22,24 @@ struct ProspectsView: View {
         NavigationView {
             List {
                 ForEach(filteredProspects) { prospect in
-                    VStack(alignment: .leading) {
-                        Text(prospect.name)
-                            .font(.headline)
-                        Text(prospect.emailAddress)
-                            .foregroundColor(.secondary)
+                    HStack {
+                        if prospect.isContacted {
+                            Label("Contacted", systemImage: "person.crop.circle.badge.checkmark")
+                                .foregroundStyle(.green)
+                                .labelStyle(.iconOnly)
+                                .font(.title)
+                        } else {
+                            Label("Not Contacted", systemImage: "person.crop.circle.badge.clock")
+                                .foregroundStyle(.orange)
+                                .labelStyle(.iconOnly)
+                                .font(.title)
+                        }
+                        VStack(alignment: .leading) {
+                            Text(prospect.name)
+                                .font(.headline)
+                            Text(prospect.emailAddress)
+                                .foregroundColor(.secondary)
+                        }
                     }
                     .swipeActions {
                         if prospect.isContacted {
@@ -52,6 +65,27 @@ struct ProspectsView: View {
                             .tint(.orange)
                         }
                     }
+                    .swipeActions(edge: .leading) {
+                        Button {
+                            prospects.delete(prospect)
+                        } label: {
+                            Label("Delete Contact", systemImage: "trash")
+                        }
+                        .tint(.red)
+                    }
+                }
+            }
+            .contextMenu {
+                Button {
+                    prospects.setSortMethod(.date)
+                } label: {
+                    Text("Sort by Recent")
+                }
+                
+                Button {
+                    prospects.setSortMethod(.name)
+                } label: {
+                    Text("Sort by Name")
                 }
             }
             .navigationTitle(title)
@@ -63,7 +97,7 @@ struct ProspectsView: View {
                 }
             }
             .sheet(isPresented: $isShowingScanner) {
-                CodeScannerView(codeTypes: [.qr], simulatedData: "Alex Bonder\nlexbonder@gmail.com", completion: handleScan)
+                CodeScannerView(codeTypes: [.qr], simulatedData: "tttttt\nlexbonder@gmail.com", completion: handleScan)
             }
         }
     }

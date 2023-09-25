@@ -28,7 +28,7 @@ class Prospect: Identifiable, Codable {
             switch currentSortMethod {
             case .date:
                 people.sort { lhs, rhs in
-                    lhs.dateAdded < rhs.dateAdded
+                    lhs.dateAdded > rhs.dateAdded
                 }
             case .name:
                 people.sort { lhs, rhs in
